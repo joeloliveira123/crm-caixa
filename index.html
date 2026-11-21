@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sua Empresa | CRM &amp; Fluxo de Caixa</title>
+    <meta
+      name="description"
+      content="Sistema integrado de CRM (Funil de Vendas) e Fluxo de Caixa para empresas. Personalize com o nome da sua empresa e teste em tempo real."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- BARRA DE AUTONOMIA DO EMPRESÁRIO -->
+    <div class="owner-bar">
+      <div class="container owner-bar-inner">
+        <label for="quick-biz-name" class="owner-prompt">
+          Coloque o nome da <strong>Sua Empresa</strong> e teste o painel como se já fosse seu:
+        </label>
+        <div class="owner-controls">
+          <input
+            type="text"
+            id="quick-biz-name"
+            placeholder="Ex: Oliveira Soluções"
+            aria-label="Nome da sua empresa"
+          />
+          <input type="color" id="quick-biz-color" title="Cor da sua empresa" aria-label="Cor da sua empresa" />
+          <button id="reset-demo-btn" type="button" class="btn-owner-reset">Restaurar Demo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CABEÇALHO -->
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <div class="brand">
+          <div class="brand-mark" id="biz-logo" aria-hidden="true">SE</div>
+          <div>
+            <div class="brand-name" id="biz-name">Sua Empresa</div>
+            <div class="brand-sub">CRM Comercial &amp; Fluxo de Caixa</div>
+          </div>
+        </div>
+
+        <nav class="module-tabs" role="tablist" aria-label="Módulos do sistema">
+          <button class="tab-btn active" data-tab="crm" role="tab" aria-selected="true">
+            Seu Funil de Vendas <span class="tab-pill" id="crm-count">0</span>
+          </button>
+          <button class="tab-btn" data-tab="cashflow" role="tab" aria-selected="false">
+            Seu Fluxo de Caixa <span class="tab-pill" id="cf-count">0</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container main-wrap">
+      <!-- FAIXA DE KPIs EXECUTIVOS -->
+      <section class="kpi-grid" aria-label="Indicadores financeiros e comerciais">
+        <article class="kpi-card kpi-dark">
+          <span>Saldo / Lucro Líquido</span>
+          <strong id="kpi-profit">R$ 0,00</strong>
+          <small id="kpi-margin">Margem: 0%</small>
+        </article>
+        <article class="kpi-card">
+          <span>Entradas (Receitas)</span>
+          <strong id="kpi-in" class="text-green">R$ 0,00</strong>
+          <small id="kpi-in-count">0 lançamentos</small>
+        </article>
+        <article class="kpi-card">
+          <span>Saídas (Despesas)</span>
+          <strong id="kpi-out" class="text-red">R$ 0,00</strong>
+          <small id="kpi-out-count">0 lançamentos</small>
+        </article>
+        <article class="kpi-card">
+          <span>Em Negociação (CRM)</span>
+          <strong id="kpi-pipeline">R$ 0,00</strong>
+          <small id="kpi-conversion">Conversão: 0%</small>
+        </article>
+      </section>
+
+      <!-- MÓDULO 1: CRM (FUNIL DE VENDAS) -->
+      <section id="tab-crm" class="module-section">
+        <div class="section-toolbar">
+          <div>
+            <h1>Funil de Vendas da <span class="biz-inline-name">Sua Empresa</span></h1>
+            <p>
+              Acompanhe seus orçamentos por etapa. Ao clicar em <strong>Fechar Venda</strong>, o
+              valor entra automaticamente no seu Fluxo de Caixa.
+            </p>
+          </div>
+          <button id="open-lead-modal" type="button" class="btn-primary">+ Novo Orçamento</button>
+        </div>
+
+        <div id="kanban-board" class="kanban-board"></div>
+      </section>
+
+      <!-- MÓDULO 2: FLUXO DE CAIXA -->
+      <section id="tab-cashflow" class="module-section hidden">
+        <div class="section-toolbar">
+          <div>
+            <h1>Fluxo de Caixa da <span class="biz-inline-name">Sua Empresa</span></h1>
+            <p>Controle entradas, despesas fixas e margem real, com exportação para Excel (CSV).</p>
+          </div>
+          <button id="export-csv-btn" type="button" class="btn-outline">Exportar CSV (Excel)</button>
+        </div>
+
+        <div class="cf-layout">
+          <!-- FORMULÁRIO DE LANÇAMENTO -->
+          <aside class="cf-form-card">
+            <h2>Novo Lançamento</h2>
+            <form id="tx-form" class="tx-form">
+              <div class="type-toggle">
+                <button type="button" class="type-btn active-in" data-type="entrada">Entrada (+)</button>
+                <button type="button" class="type-btn" data-type="saida">Saída (-)</button>
+              </div>
+
+              <div class="field">
+                <label for="tx-desc">Descrição</label>
+                <input type="text" id="tx-desc" required placeholder="Ex: Pagamento cliente / Aluguel" />
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="tx-amount">Valor (R$)</label>
+                  <input type="number" id="tx-amount" required min="1" step="0.01" placeholder="0,00" />
+                </div>
+                <div class="field">
+                  <label for="tx-date">Data</label>
+                  <input type="date" id="tx-date" required />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="tx-cat">Categoria</label>
+                <select id="tx-cat">
+                  <option value="Vendas & Serviços">Vendas &amp; Serviços</option>
+                  <option value="Fornecedores">Fornecedores &amp; Estoque</option>
+                  <option value="Custos Fixos">Aluguel, Luz &amp; Internet</option>
+                  <option value="Marketing">Marketing &amp; Tráfego</option>
+                  <option value="Equipe">Equipe &amp; Pró-labore</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-primary btn-full">Registrar no Caixa</button>
+            </form>
+
+            <!-- BARRA DE SAÚDE FINANCEIRA -->
+            <div class="health-box">
+              <div class="health-head">
+                <span>Proporção Entradas vs. Saídas</span>
+                <strong id="health-pct">0%</strong>
+              </div>
+              <div class="health-bar">
+                <div id="health-fill" class="health-fill" style="width: 0%"></div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- EXTRATO DE MOVIMENTAÇÕES -->
+          <div class="cf-ledger-card">
+            <div class="ledger-head">
+              <h2>Movimentações</h2>
+              <div class="ledger-filters">
+                <button class="filter-chip active" data-filter="all">Todas</button>
+                <button class="filter-chip" data-filter="entrada">Entradas</button>
+                <button class="filter-chip" data-filter="saida">Saídas</button>
+              </div>
+            </div>
+            <div id="tx-list" class="tx-list"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- MODAL NOVO ORÇAMENTO / LEAD -->
+    <div id="lead-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+      <div class="modal-backdrop" id="lead-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-head">
+          <h2 id="lead-modal-title">Novo Cliente / Orçamento</h2>
+          <button id="close-lead-modal" class="modal-close" aria-label="Fechar">✕</button>
+        </div>
+        <form id="lead-form" class="tx-form">
+          <div class="field">
+            <label for="lead-name">Nome do Cliente ou Empresa</label>
+            <input type="text" id="lead-name" required placeholder="Ex: Roberto Almeida · Padaria Central" />
+          </div>
+          <div class="field">
+            <label for="lead-service">Serviço / Produto Orçado</label>
+            <input type="text" id="lead-service" required placeholder="Ex: Pacote Mensal / Projeto Completo" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="lead-value">Valor Previsto (R$)</label>
+              <input type="number" id="lead-value" required min="1" step="0.01" placeholder="1500,00" />
+            </div>
+            <div class="field">
+              <label for="lead-origin">Origem do Contato</label>
+              <select id="lead-origin">
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Indicação">Indicação</option>
+                <option value="Google">Google</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="lead-stage">Etapa Inicial</label>
+            <select id="lead-stage">
+              <option value="novo">Novo Contato</option>
+              <option value="orcamento">Orçamento Enviado</option>
+              <option value="negociacao">Em Negociação</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary btn-full">Adicionar ao Funil</button>
+        </form>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span><strong id="footer-biz-name">Sua Empresa</strong> · CRM &amp; Fluxo de Caixa</span>
+        <span>Desenvolvido por <strong>Joel Oliveira.</strong></span>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
