@@ -2,7 +2,8 @@ const STAGES = [
   { id: "novo", label: "Novo Contato" },
   { id: "orcamento", label: "Orçamento Enviado" },
   { id: "negociacao", label: "Em Negociação" },
-  { id: "fechado", label: "Venda Fechada" }
+  { id: "fechado", label: "Venda Fechada" },
+  { id: "perdido", label: "Não Fechou" }
 ];
 
 const DEFAULT_DATA = {
@@ -15,6 +16,7 @@ const DEFAULT_DATA = {
       service: "Site Institucional + Cardápio",
       value: 1800,
       origin: "WhatsApp",
+      seller: "Joel Oliveira",
       stage: "novo"
     },
     {
@@ -23,6 +25,7 @@ const DEFAULT_DATA = {
       service: "Sistema de Agendamento",
       value: 2400,
       origin: "Indicação",
+      seller: "Mariana Costa",
       stage: "orcamento"
     },
     {
@@ -31,6 +34,7 @@ const DEFAULT_DATA = {
       service: "Painel de Estoque & Caixa",
       value: 3200,
       origin: "Google",
+      seller: "Joel Oliveira",
       stage: "negociacao"
     },
     {
@@ -39,14 +43,25 @@ const DEFAULT_DATA = {
       service: "Site + Clube Mensal",
       value: 1500,
       origin: "Instagram",
+      seller: "Lucas Silva",
       stage: "fechado"
+    },
+    {
+      id: "l5",
+      name: "Restaurante Sabor Sul",
+      service: "Cardápio Digital",
+      value: 1200,
+      origin: "WhatsApp",
+      seller: "Mariana Costa",
+      stage: "perdido",
+      lostReason: "Achou o preço alto"
     }
   ],
   transactions: [
     {
       id: "t1",
       type: "entrada",
-      desc: "Venda Fechada: Barbearia Dom Pedro",
+      desc: "Venda Fechada: Barbearia Dom Pedro (Lucas Silva)",
       cat: "Vendas & Serviços",
       amount: 1500,
       date: new Date().toISOString().slice(0, 10)
@@ -78,7 +93,7 @@ const DEFAULT_DATA = {
   ]
 };
 
-const STORE_KEY = "crm_caixa_mvp_v1";
+const STORE_KEY = "crm_caixa_mvp_v2";
 
 function loadState() {
   try {
@@ -124,7 +139,7 @@ function applyBranding() {
   document.querySelectorAll(".biz-inline-name").forEach((el) => {
     el.textContent = state.bizName;
   });
-  document.title = `${state.bizName} | CRM & Fluxo de Caixa`;
+  document.title = `${state.bizName} | CRM, ROI & Fluxo de Caixa`;
 
   const quickName = document.getElementById("quick-biz-name");
   if (document.activeElement !== quickName) {
@@ -141,19 +156,36 @@ function renderKPIs() {
   const profit = totalIn - totalOut;
   const margin = totalIn > 0 ? Math.round((profit / totalIn) * 100) : 0;
 
-  const openLeads = state.leads.filter((l) => l.stage !== "fechado");
+  const mktInvest = outs
+    .filter((t) => t.cat === "Marketing")
+    .reduce((s, t) => s + Number(t.amount), 0);
+  const baseInvest = mktInvest > 0 ? mktInvest : totalOut;
+  const roiPct = baseInvest > 0 ? Math.round(((totalIn - baseInvest) / baseInvest) * 100) : 0;
+  const roasX = baseInvest > 0 ? (totalIn / baseInvest).toFixed(1) : "0.0";
+
   const wonLeads = state.leads.filter((l) => l.stage === "fechado");
-  const pipeline = openLeads.reduce((s, l) => s + Number(l.value), 0);
+  const lostLeads = state.leads.filter((l) => l.stage === "perdido");
+  const lostTotal = lostLeads.reduce((s, l) => s + Number(l.value), 0);
   const conversion = state.leads.length > 0 ? Math.round((wonLeads.length / state.leads.length) * 100) : 0;
 
+  const resultCard = document.getElementById("kpi-result-card");
+  const resultLabel = document.getElementById("kpi-result-label");
+  if (profit < 0) {
+    resultCard.classList.add("kpi-loss");
+    resultLabel.textContent = "Prejuízo no Período";
+  } else {
+    resultCard.classList.remove("kpi-loss");
+    resultLabel.textContent = "Lucro Líquido no Período";
+  }
+
   document.getElementById("kpi-profit").textContent = formatBRL(profit);
-  document.getElementById("kpi-margin").textContent = `Margem: ${margin}%`;
+  document.getElementById("kpi-margin").textContent = `Margem: ${margin}% · ${outs.length} saídas`;
   document.getElementById("kpi-in").textContent = formatBRL(totalIn);
-  document.getElementById("kpi-in-count").textContent = `${ins.length} lançamentos`;
-  document.getElementById("kpi-out").textContent = formatBRL(totalOut);
-  document.getElementById("kpi-out-count").textContent = `${outs.length} lançamentos`;
-  document.getElementById("kpi-pipeline").textContent = formatBRL(pipeline);
-  document.getElementById("kpi-conversion").textContent = `Conversão: ${conversion}%`;
+  document.getElementById("kpi-out-sub").textContent = `Saídas: ${formatBRL(totalOut)}`;
+  document.getElementById("kpi-roi").textContent = `${roiPct >= 0 ? "+" : ""}${roiPct}%`;
+  document.getElementById("kpi-roi-sub").textContent = `Retorno: ${roasX}x sobre ${formatBRL(baseInvest)}`;
+  document.getElementById("kpi-funnel-mix").textContent = `${state.leads.length} / ${wonLeads.length} / ${lostLeads.length}`;
+  document.getElementById("kpi-conversion").textContent = `Conversão: ${conversion}% · Perdidos: ${formatBRL(lostTotal)}`;
 
   document.getElementById("crm-count").textContent = state.leads.length;
   document.getElementById("cf-count").textContent = state.transactions.length;
@@ -162,6 +194,63 @@ function renderKPIs() {
   const inPct = totalFlow > 0 ? Math.round((totalIn / totalFlow) * 100) : 50;
   document.getElementById("health-pct").textContent = `${inPct}% entradas`;
   document.getElementById("health-fill").style.width = `${inPct}%`;
+}
+
+function renderIntel() {
+  const sellers = {};
+  state.leads.forEach((l) => {
+    const s = l.seller || "Equipe";
+    if (!sellers[s]) sellers[s] = { wonCount: 0, wonVal: 0, total: 0 };
+    sellers[s].total += 1;
+    if (l.stage === "fechado") {
+      sellers[s].wonCount += 1;
+      sellers[s].wonVal += Number(l.value);
+    }
+  });
+
+  const sellerEl = document.getElementById("seller-ranking");
+  sellerEl.innerHTML = Object.entries(sellers)
+    .sort((a, b) => b[1].wonVal - a[1].wonVal)
+    .map(
+      ([name, d]) => `
+      <div class="intel-row">
+        <span>${name} (${d.wonCount}/${d.total} vendas)</span>
+        <strong class="text-green">${formatBRL(d.wonVal)}</strong>
+      </div>`
+    )
+    .join("");
+
+  const lostLeads = state.leads.filter((l) => l.stage === "perdido");
+  const lostEl = document.getElementById("lost-summary");
+  if (lostLeads.length === 0) {
+    lostEl.innerHTML = `<div class="intel-row"><span>Nenhuma venda perdida até agora.</span><strong>R$ 0,00</strong></div>`;
+  } else {
+    lostEl.innerHTML = lostLeads
+      .map(
+        (l) => `
+      <div class="intel-row">
+        <span>${l.name} · ${l.lostReason || "Sem retorno"}</span>
+        <strong class="text-red">-${formatBRL(l.value)}</strong>
+      </div>`
+      )
+      .join("");
+  }
+
+  const totalIn = state.transactions.filter((t) => t.type === "entrada").reduce((s, t) => s + Number(t.amount), 0);
+  const totalOut = state.transactions.filter((t) => t.type === "saida").reduce((s, t) => s + Number(t.amount), 0);
+  const profit = totalIn - totalOut;
+  const wonLeads = state.leads.filter((l) => l.stage === "fechado");
+  const avgTicket = wonLeads.length > 0 ? wonLeads.reduce((s, l) => s + Number(l.value), 0) / wonLeads.length : 0;
+
+  document.getElementById("roi-breakdown").innerHTML = `
+    <div class="intel-row"><span>Ticket Médio (Vendas)</span><strong>${formatBRL(avgTicket)}</strong></div>
+    <div class="intel-row"><span>Total que Entrou</span><strong class="text-green">${formatBRL(totalIn)}</strong></div>
+    <div class="intel-row"><span>Total que Saiu</span><strong class="text-red">${formatBRL(totalOut)}</strong></div>
+    <div class="intel-row">
+      <span>${profit >= 0 ? "Lucro Real" : "Prejuízo Real"}</span>
+      <strong class="${profit >= 0 ? "text-green" : "text-red"}">${formatBRL(profit)}</strong>
+    </div>
+  `;
 }
 
 function renderKanban() {
@@ -188,14 +277,17 @@ function renderKanban() {
       card.className = "lead-card";
 
       let actionsHtml = "";
-      if (stage.id !== "fechado") {
+      if (stage.id !== "fechado" && stage.id !== "perdido") {
         const nextStage = STAGES[idx + 1];
         actionsHtml += `<button class="lead-btn" data-act="next" data-id="${lead.id}" data-next="${nextStage.id}">Mover →</button>`;
         if (nextStage.id !== "fechado") {
-          actionsHtml += `<button class="lead-btn lead-btn-win" data-act="win" data-id="${lead.id}">Fechar Venda ✓</button>`;
+          actionsHtml += `<button class="lead-btn lead-btn-win" data-act="win" data-id="${lead.id}">Fechar ✓</button>`;
         }
-      } else {
+        actionsHtml += `<button class="lead-btn lead-btn-lost" data-act="lost" data-id="${lead.id}">Perdido ✕</button>`;
+      } else if (stage.id === "fechado") {
         actionsHtml = `<span style="font-size:0.74rem; color: var(--green); font-weight:700;">Lançado no Caixa ✓</span>`;
+      } else {
+        actionsHtml = `<span style="font-size:0.74rem; color: var(--red); font-weight:700;">${lead.lostReason || "Não fechou"}</span>`;
       }
 
       card.innerHTML = `
@@ -205,6 +297,7 @@ function renderKanban() {
         </div>
         <strong>${lead.name}</strong>
         <div class="lead-service">${lead.service}</div>
+        <div class="lead-seller-tag">Resp.: ${lead.seller || "Equipe"}</div>
         <div class="lead-actions">${actionsHtml}</div>
       `;
       listEl.appendChild(card);
@@ -217,18 +310,24 @@ function renderKanban() {
     btn.addEventListener("click", () => {
       const lead = state.leads.find((l) => l.id === btn.dataset.id);
       if (!lead) return;
-      const targetStage = btn.dataset.act === "win" ? "fechado" : btn.dataset.next;
-      lead.stage = targetStage;
 
-      if (targetStage === "fechado") {
-        state.transactions.unshift({
-          id: "t" + Date.now(),
-          type: "entrada",
-          desc: `Venda Fechada: ${lead.name}`,
-          cat: "Vendas & Serviços",
-          amount: Number(lead.value),
-          date: new Date().toISOString().slice(0, 10)
-        });
+      if (btn.dataset.act === "lost") {
+        lead.stage = "perdido";
+        lead.lostReason = "Preço / Sem retorno";
+      } else {
+        const targetStage = btn.dataset.act === "win" ? "fechado" : btn.dataset.next;
+        lead.stage = targetStage;
+
+        if (targetStage === "fechado") {
+          state.transactions.unshift({
+            id: "t" + Date.now(),
+            type: "entrada",
+            desc: `Venda Fechada: ${lead.name} (${lead.seller || "Equipe"})`,
+            cat: "Vendas & Serviços",
+            amount: Number(lead.value),
+            date: new Date().toISOString().slice(0, 10)
+          });
+        }
       }
 
       saveState();
@@ -278,6 +377,7 @@ function renderLedger() {
 function renderAll() {
   applyBranding();
   renderKPIs();
+  renderIntel();
   renderKanban();
   renderLedger();
 }
@@ -387,6 +487,7 @@ document.getElementById("lead-form").addEventListener("submit", (e) => {
   const name = document.getElementById("lead-name").value.trim();
   const service = document.getElementById("lead-service").value.trim();
   const value = Number(document.getElementById("lead-value").value);
+  const seller = document.getElementById("lead-seller").value;
   const origin = document.getElementById("lead-origin").value;
   const stage = document.getElementById("lead-stage").value;
   if (!name || !service || !value) return;
@@ -396,6 +497,7 @@ document.getElementById("lead-form").addEventListener("submit", (e) => {
     name,
     service,
     value,
+    seller,
     origin,
     stage
   });

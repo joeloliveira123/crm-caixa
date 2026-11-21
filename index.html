@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sua Empresa | CRM &amp; Fluxo de Caixa</title>
+    <title>Sua Empresa | CRM, ROI &amp; Fluxo de Caixa</title>
     <meta
       name="description"
-      content="Sistema integrado de CRM (Funil de Vendas) e Fluxo de Caixa para empresas. Personalize com o nome da sua empresa e teste em tempo real."
+      content="Painel executivo de CRM e Fluxo de Caixa para Sua Empresa: quem entrou, quem vendeu, quem não vendeu, ROI, lucro e prejuízo em tempo real."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -21,7 +21,7 @@
     <div class="owner-bar">
       <div class="container owner-bar-inner">
         <label for="quick-biz-name" class="owner-prompt">
-          Coloque o nome da <strong>Sua Empresa</strong> e teste o painel como se já fosse seu:
+          Coloque o nome da <strong>Sua Empresa</strong> e acompanhe seus números como se já fosse o seu painel:
         </label>
         <div class="owner-controls">
           <input
@@ -43,7 +43,7 @@
           <div class="brand-mark" id="biz-logo" aria-hidden="true">SE</div>
           <div>
             <div class="brand-name" id="biz-name">Sua Empresa</div>
-            <div class="brand-sub">CRM Comercial &amp; Fluxo de Caixa</div>
+            <div class="brand-sub">Gestão Comercial, ROI &amp; Fluxo de Caixa</div>
           </div>
         </div>
 
@@ -52,7 +52,7 @@
             Seu Funil de Vendas <span class="tab-pill" id="crm-count">0</span>
           </button>
           <button class="tab-btn" data-tab="cashflow" role="tab" aria-selected="false">
-            Seu Fluxo de Caixa <span class="tab-pill" id="cf-count">0</span>
+            Seu Fluxo de Caixa &amp; ROI <span class="tab-pill" id="cf-count">0</span>
           </button>
         </nav>
       </div>
@@ -61,25 +61,25 @@
     <main class="container main-wrap">
       <!-- FAIXA DE KPIs EXECUTIVOS -->
       <section class="kpi-grid" aria-label="Indicadores financeiros e comerciais">
-        <article class="kpi-card kpi-dark">
-          <span>Saldo / Lucro Líquido</span>
+        <article class="kpi-card kpi-dark" id="kpi-result-card">
+          <span id="kpi-result-label">Lucro Líquido no Período</span>
           <strong id="kpi-profit">R$ 0,00</strong>
           <small id="kpi-margin">Margem: 0%</small>
         </article>
         <article class="kpi-card">
-          <span>Entradas (Receitas)</span>
+          <span>Entradas vs. Saídas</span>
           <strong id="kpi-in" class="text-green">R$ 0,00</strong>
-          <small id="kpi-in-count">0 lançamentos</small>
+          <small id="kpi-out-sub">Saídas: R$ 0,00</small>
         </article>
         <article class="kpi-card">
-          <span>Saídas (Despesas)</span>
-          <strong id="kpi-out" class="text-red">R$ 0,00</strong>
-          <small id="kpi-out-count">0 lançamentos</small>
+          <span>ROI sobre Marketing</span>
+          <strong id="kpi-roi">0%</strong>
+          <small id="kpi-roi-sub">Retorno sobre investimento</small>
         </article>
         <article class="kpi-card">
-          <span>Em Negociação (CRM)</span>
-          <strong id="kpi-pipeline">R$ 0,00</strong>
-          <small id="kpi-conversion">Conversão: 0%</small>
+          <span>Quem Entrou · Vendeu · Saiu</span>
+          <strong id="kpi-funnel-mix">0 / 0 / 0</strong>
+          <small id="kpi-conversion">Conversão: 0% · Perdidos: R$ 0,00</small>
         </article>
       </section>
 
@@ -89,8 +89,8 @@
           <div>
             <h1>Funil de Vendas da <span class="biz-inline-name">Sua Empresa</span></h1>
             <p>
-              Acompanhe seus orçamentos por etapa. Ao clicar em <strong>Fechar Venda</strong>, o
-              valor entra automaticamente no seu Fluxo de Caixa.
+              Veja quem entrou, quem vendeu e quem não fechou. Vendas fechadas entram
+              automaticamente no seu Fluxo de Caixa.
             </p>
           </div>
           <button id="open-lead-modal" type="button" class="btn-primary">+ Novo Orçamento</button>
@@ -99,20 +99,41 @@
         <div id="kanban-board" class="kanban-board"></div>
       </section>
 
-      <!-- MÓDULO 2: FLUXO DE CAIXA -->
+      <!-- MÓDULO 2: FLUXO DE CAIXA & INTELIGÊNCIA -->
       <section id="tab-cashflow" class="module-section hidden">
         <div class="section-toolbar">
           <div>
-            <h1>Fluxo de Caixa da <span class="biz-inline-name">Sua Empresa</span></h1>
-            <p>Controle entradas, despesas fixas e margem real, com exportação para Excel (CSV).</p>
+            <h1>Fluxo de Caixa &amp; Resultados da <span class="biz-inline-name">Sua Empresa</span></h1>
+            <p>
+              Análise completa de entradas, saídas, ROI, lucro ou prejuízo, desempenho por vendedor
+              e motivos de perda.
+            </p>
           </div>
           <button id="export-csv-btn" type="button" class="btn-outline">Exportar CSV (Excel)</button>
         </div>
 
+        <!-- RESUMO EXECUTIVO: QUEM ENTROU, QUEM VENDEU, QUEM NÃO VENDEU, ROI E PREJUÍZO -->
+        <section class="intel-grid" aria-label="Resumo executivo do negócio">
+          <article class="intel-card">
+            <h3>Quem Vendeu (Por Vendedor)</h3>
+            <div id="seller-ranking" class="intel-list"></div>
+          </article>
+
+          <article class="intel-card">
+            <h3>Quem Não Vendeu (Perdas)</h3>
+            <div id="lost-summary" class="intel-list"></div>
+          </article>
+
+          <article class="intel-card">
+            <h3>Raio-X: ROI, Ticket &amp; Prejuízo</h3>
+            <div id="roi-breakdown" class="intel-list"></div>
+          </article>
+        </section>
+
         <div class="cf-layout">
           <!-- FORMULÁRIO DE LANÇAMENTO -->
           <aside class="cf-form-card">
-            <h2>Novo Lançamento</h2>
+            <h2>Novo Lançamento no Caixa</h2>
             <form id="tx-form" class="tx-form">
               <div class="type-toggle">
                 <button type="button" class="type-btn active-in" data-type="entrada">Entrada (+)</button>
@@ -141,7 +162,7 @@
                   <option value="Vendas & Serviços">Vendas &amp; Serviços</option>
                   <option value="Fornecedores">Fornecedores &amp; Estoque</option>
                   <option value="Custos Fixos">Aluguel, Luz &amp; Internet</option>
-                  <option value="Marketing">Marketing &amp; Tráfego</option>
+                  <option value="Marketing">Marketing &amp; Anúncios</option>
                   <option value="Equipe">Equipe &amp; Pró-labore</option>
                 </select>
               </div>
@@ -149,7 +170,6 @@
               <button type="submit" class="btn-primary btn-full">Registrar no Caixa</button>
             </form>
 
-            <!-- BARRA DE SAÚDE FINANCEIRA -->
             <div class="health-box">
               <div class="health-head">
                 <span>Proporção Entradas vs. Saídas</span>
@@ -164,7 +184,7 @@
           <!-- EXTRATO DE MOVIMENTAÇÕES -->
           <div class="cf-ledger-card">
             <div class="ledger-head">
-              <h2>Movimentações</h2>
+              <h2>Quem Entrou e Quem Saiu do Caixa</h2>
               <div class="ledger-filters">
                 <button class="filter-chip active" data-filter="all">Todas</button>
                 <button class="filter-chip" data-filter="entrada">Entradas</button>
@@ -200,6 +220,16 @@
               <input type="number" id="lead-value" required min="1" step="0.01" placeholder="1500,00" />
             </div>
             <div class="field">
+              <label for="lead-seller">Vendedor Responsável</label>
+              <select id="lead-seller">
+                <option value="Joel Oliveira">Joel Oliveira</option>
+                <option value="Mariana Costa">Mariana Costa</option>
+                <option value="Lucas Silva">Lucas Silva</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
               <label for="lead-origin">Origem do Contato</label>
               <select id="lead-origin">
                 <option value="WhatsApp">WhatsApp</option>
@@ -208,14 +238,14 @@
                 <option value="Google">Google</option>
               </select>
             </div>
-          </div>
-          <div class="field">
-            <label for="lead-stage">Etapa Inicial</label>
-            <select id="lead-stage">
-              <option value="novo">Novo Contato</option>
-              <option value="orcamento">Orçamento Enviado</option>
-              <option value="negociacao">Em Negociação</option>
-            </select>
+            <div class="field">
+              <label for="lead-stage">Etapa Inicial</label>
+              <select id="lead-stage">
+                <option value="novo">Novo Contato</option>
+                <option value="orcamento">Orçamento Enviado</option>
+                <option value="negociacao">Em Negociação</option>
+              </select>
+            </div>
           </div>
           <button type="submit" class="btn-primary btn-full">Adicionar ao Funil</button>
         </form>
@@ -224,7 +254,7 @@
 
     <footer class="site-footer">
       <div class="container footer-inner">
-        <span><strong id="footer-biz-name">Sua Empresa</strong> · CRM &amp; Fluxo de Caixa</span>
+        <span><strong id="footer-biz-name">Sua Empresa</strong> · CRM, ROI &amp; Fluxo de Caixa</span>
         <span>Desenvolvido por <strong>Joel Oliveira.</strong></span>
       </div>
     </footer>

@@ -15,8 +15,8 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-sans: "Lora", Georgia, serif;
 }
 
 *,
@@ -30,8 +30,15 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+.brand-name {
+  font-family: var(--font-display);
 }
 
 input,
@@ -222,9 +229,9 @@ select {
 }
 
 .kpi-card strong {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
   font-size: 1.48rem;
-  font-weight: 600;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -237,6 +244,11 @@ select {
   background: var(--ink);
   color: #FFFFFF;
   border-color: var(--ink);
+}
+
+.kpi-dark.kpi-loss {
+  background: #7F1D1D;
+  border-color: #991B1B;
 }
 
 .kpi-dark span,
@@ -307,9 +319,52 @@ select {
 /* KANBAN BOARD */
 .kanban-board {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.85rem;
   align-items: start;
+}
+
+.intel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.intel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 1.25rem;
+}
+
+.intel-card h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.intel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.intel-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.84rem;
+}
+
+.intel-row span {
+  color: var(--muted);
+}
+
+.intel-row strong {
+  font-variant-numeric: tabular-nums;
 }
 
 .kanban-col {
@@ -411,6 +466,18 @@ select {
   background: var(--green);
   border-color: var(--green);
   color: #FFFFFF;
+}
+
+.lead-btn-lost {
+  background: var(--red-soft);
+  border-color: rgba(185, 28, 28, 0.25);
+  color: var(--red);
+}
+
+.lead-seller-tag {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-bottom: 0.55rem;
 }
 
 /* CASHFLOW */
@@ -673,7 +740,8 @@ select {
 
 @media (max-width: 1024px) {
   .kpi-grid,
-  .kanban-board {
+  .kanban-board,
+  .intel-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .cf-layout {
@@ -684,6 +752,7 @@ select {
 @media (max-width: 640px) {
   .kpi-grid,
   .kanban-board,
+  .intel-grid,
   .field-row {
     grid-template-columns: 1fr;
   }
