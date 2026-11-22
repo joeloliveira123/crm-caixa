@@ -6,34 +6,58 @@
     <title>Sua Empresa | CRM, ROI &amp; Fluxo de Caixa</title>
     <meta
       name="description"
-      content="Painel executivo de CRM e Fluxo de Caixa para Sua Empresa: quem entrou, quem vendeu, quem não vendeu, ROI, lucro e prejuízo em tempo real."
+      content="Painel executivo de CRM, Lista de Clientes, Gráficos de Vendas, ROI e Fluxo de Caixa em tempo real para Sua Empresa."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <!-- BARRA DE AUTONOMIA DO EMPRESÁRIO -->
+    <!-- BARRA SUPERIOR DE PERSONALIZAÇÃO AO VIVO -->
     <div class="owner-bar">
-      <div class="container owner-bar-inner">
-        <label for="quick-biz-name" class="owner-prompt" style="display:inline-flex;align-items:center;gap:0.6rem;">
-          <svg width="32" height="24" viewBox="-10 0 215 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0;">
+      <div class="owner-bar-inner">
+        <label for="quick-biz-name" class="owner-prompt">
+          <svg
+            width="28"
+            height="21"
+            viewBox="-10 0 215 160"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            class="jo-mark"
+          >
             <defs>
               <linearGradient id="joTopGrad" x1="0%" y1="100%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#FFFFFF" />
-                <stop offset="45%" stop-color="#7DD3FC" />
-                <stop offset="100%" stop-color="#0066FF" />
+                <stop offset="45%" stop-color="#A5B4FC" />
+                <stop offset="100%" stop-color="#6366F1" />
               </linearGradient>
             </defs>
-            <path d="M58 38 V104 C58 130 43 144 23 144 C8 144 -3 136 -9 124" transform="translate(18,-10)" fill="none" stroke="url(#joTopGrad)" stroke-width="25" stroke-linecap="round" />
-            <path d="M78 97 C78 66 94 27 129 27 C159 27 178 48 178 75 C178 104 158 125 131 125 C109 125 94 115 84 99" fill="none" stroke="url(#joTopGrad)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+              d="M58 38 V104 C58 130 43 144 23 144 C8 144 -3 136 -9 124"
+              transform="translate(18,-10)"
+              fill="none"
+              stroke="url(#joTopGrad)"
+              stroke-width="25"
+              stroke-linecap="round"
+            />
+            <path
+              d="M78 97 C78 66 94 27 129 27 C159 27 178 48 178 75 C178 104 158 125 131 125 C109 125 94 115 84 99"
+              fill="none"
+              stroke="url(#joTopGrad)"
+              stroke-width="25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
-          <span>Coloque o nome da <strong>Sua Empresa</strong> e acompanhe seus números como se já fosse o seu painel:</span>
+          <span>
+            Coloque o nome da <strong>Sua Empresa</strong> e acompanhe seus números em tempo real:
+          </span>
         </label>
         <div class="owner-controls">
           <input
@@ -42,194 +66,544 @@
             placeholder="Ex: Oliveira Soluções"
             aria-label="Nome da sua empresa"
           />
-          <input type="color" id="quick-biz-color" title="Cor da sua empresa" aria-label="Cor da sua empresa" />
-          <button id="reset-demo-btn" type="button" class="btn-owner-reset">Restaurar Demo</button>
+          <input
+            type="color"
+            id="quick-biz-color"
+            title="Cor principal da empresa"
+            aria-label="Cor principal da empresa"
+          />
+          <button id="reset-demo-btn" type="button" class="btn-owner-reset">
+            Restaurar Demo
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- CABEÇALHO -->
-    <header class="topbar">
-      <div class="container topbar-inner">
-        <div class="brand">
-          <div class="brand-mark" id="biz-logo" aria-hidden="true">SE</div>
-          <div>
-            <div class="brand-name" id="biz-name">Sua Empresa</div>
-            <div class="brand-sub">Gestão Comercial, ROI &amp; Fluxo de Caixa</div>
+    <!-- SHELL SAAS (SIDEBAR ESCURA + WORKSPACE CLARO) -->
+    <div class="app-shell">
+      <div id="sidebar-backdrop" class="sidebar-backdrop hidden"></div>
+
+      <aside id="app-sidebar" class="sidebar" aria-label="Menu lateral do CRM">
+        <div class="sidebar-head">
+          <div class="sidebar-brand">
+            <div class="brand-badge" id="biz-logo" aria-hidden="true">SE</div>
+            <div class="brand-text">
+              <strong id="biz-name">Sua Empresa</strong>
+              <span>CRM &amp; Financeiro</span>
+            </div>
           </div>
+          <button
+            id="close-sidebar-btn"
+            type="button"
+            class="sidebar-mobile-close"
+            aria-label="Fechar menu"
+          >
+            ✕
+          </button>
         </div>
 
-        <nav class="module-tabs" role="tablist" aria-label="Módulos do sistema">
-          <button class="tab-btn active" data-tab="crm" role="tab" aria-selected="true">
-            Seu Funil de Vendas <span class="tab-pill" id="crm-count">0</span>
+        <nav class="sidebar-nav" role="tablist" aria-label="Módulos do sistema">
+          <button
+            class="nav-item active"
+            data-tab="dashboard"
+            role="tab"
+            aria-selected="true"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+            <span>Dashboard</span>
           </button>
-          <button class="tab-btn" data-tab="cashflow" role="tab" aria-selected="false">
-            Seu Fluxo de Caixa &amp; ROI <span class="tab-pill" id="cf-count">0</span>
+
+          <button
+            class="nav-item"
+            data-tab="crm"
+            role="tab"
+            aria-selected="false"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 6h18M7 12h10M10 18h4" stroke-linecap="round" />
+            </svg>
+            <span>Funil de Vendas</span>
+            <span class="nav-pill" id="crm-count">0</span>
+          </button>
+
+          <button
+            class="nav-item"
+            data-tab="cashflow"
+            role="tab"
+            aria-selected="false"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Fluxo de Caixa</span>
+            <span class="nav-pill" id="cf-count">0</span>
+          </button>
+
+          <button
+            class="nav-item"
+            data-tab="customers"
+            role="tab"
+            aria-selected="false"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>Clientes</span>
+          </button>
+
+          <button
+            class="nav-item"
+            data-tab="analytics"
+            role="tab"
+            aria-selected="false"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 3v18h18M7 15l4-4 4 3 5-6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span>Equipe &amp; ROI</span>
           </button>
         </nav>
+
+        <div class="sidebar-promo">
+          <div class="promo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <strong class="biz-inline-name">Sua Empresa</strong>
+          <p>Baixe seu extrato financeiro completo compatível com Excel em um clique.</p>
+          <button id="export-csv-btn" type="button" class="promo-btn">Exportar CSV</button>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <!-- HEADER SUPERIOR DO DASHBOARD -->
+        <header class="workspace-header">
+          <div class="header-left">
+            <button
+              id="open-sidebar-btn"
+              type="button"
+              class="mobile-menu-btn"
+              aria-label="Abrir navegação"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+              </svg>
+            </button>
+            <div>
+              <h1 id="workspace-title">Dashboard</h1>
+              <p class="header-sub" id="workspace-subtitle">
+                Visão executiva · <span class="biz-inline-name">Sua Empresa</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <button id="open-lead-modal" type="button" class="btn-primary">
+              + Novo Orçamento
+            </button>
+            <div class="user-pill">
+              <span class="user-avatar" id="header-avatar">SE</span>
+              <span class="user-name" id="header-biz-label">Sua Empresa</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="workspace-body">
+          <!-- FAIXA DE 4 KPIs (COMUM AO DASHBOARD) -->
+          <section class="kpi-grid" aria-label="Indicadores executivos">
+            <article class="kpi-card" id="kpi-result-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 7v10M15 9.5c0-1.1-1.3-2-3-2s-3 .9-3 2 1.3 2 3 2 3 .9 3 2-1.3 2-3 2-3-.9-3-2" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="kpi-label" id="kpi-result-label">Lucro Líquido</span>
+                  <strong class="kpi-value" id="kpi-profit">R$ 0,00</strong>
+                </div>
+              </div>
+              <div class="kpi-foot">
+                <span>Margem operacional</span>
+                <strong id="kpi-margin">0%</strong>
+              </div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                    <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="kpi-label">Total de Entradas</span>
+                  <strong class="kpi-value" id="kpi-in">R$ 0,00</strong>
+                </div>
+              </div>
+              <div class="kpi-foot">
+                <span>Total de saídas</span>
+                <strong id="kpi-out-sub">R$ 0,00</strong>
+              </div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 17l6-6 4 4 8-8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M17 7h4v4" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="kpi-label">ROI sobre Marketing</span>
+                  <strong class="kpi-value" id="kpi-roi">0%</strong>
+                </div>
+              </div>
+              <div class="kpi-foot">
+                <span>Retorno múltiplo</span>
+                <strong id="kpi-roi-sub">0.0x</strong>
+              </div>
+            </article>
+
+            <article class="kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="14" rx="2.5" />
+                    <path d="M2 10h20" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="kpi-label">Entrou · Vendeu · Saiu</span>
+                  <strong class="kpi-value" id="kpi-funnel-mix">0 / 0 / 0</strong>
+                </div>
+              </div>
+              <div class="kpi-foot">
+                <span>Conversão / Perdidos</span>
+                <strong id="kpi-conversion">0%</strong>
+              </div>
+            </article>
+          </section>
+
+          <!-- VISÃO 1: DASHBOARD PRINCIPAL (EXATA COMPOSIÇÃO CLIENTEASEPRO) -->
+          <section id="tab-dashboard" class="module-section">
+            <div class="charts-grid">
+              <!-- GRÁFICO DE ÁREA: EVOLUÇÃO DE VENDAS -->
+              <article class="panel-card chart-sales-card">
+                <div class="card-head">
+                  <div>
+                    <span class="card-kicker">Vendas &amp; Entradas</span>
+                    <div class="chart-metric-row">
+                      <strong class="chart-big-num" id="sales-chart-total">R$ 0,00</strong>
+                      <span class="growth-pill" id="sales-growth-pill">↗ +18%</span>
+                    </div>
+                  </div>
+                  <div class="period-switch" role="group" aria-label="Período do gráfico">
+                    <button type="button" class="period-btn" data-period="diario">Diário</button>
+                    <button type="button" class="period-btn" data-period="semanal">Semanal</button>
+                    <button type="button" class="period-btn active" data-period="mensal">Mensal</button>
+                  </div>
+                </div>
+                <div id="sales-chart-svg-wrap" class="svg-chart-wrap"></div>
+              </article>
+
+              <!-- GRÁFICO DE BARRAS CÁPSULA: RECEITA & PIPELINE -->
+              <article class="panel-card chart-revenue-card">
+                <div class="card-head">
+                  <div>
+                    <span class="card-kicker">Receita &amp; Pipeline</span>
+                    <strong class="chart-big-num" id="revenue-chart-total">R$ 0,00</strong>
+                  </div>
+                  <button type="button" class="card-detail-link" data-jump-tab="cashflow">
+                    Detalhes
+                  </button>
+                </div>
+
+                <div id="capsule-bars" class="capsule-bars" aria-label="Distribuição mensal da receita"></div>
+
+                <div class="legend-rows">
+                  <div class="legend-row">
+                    <span><i class="dot-indigo"></i> Vendas Fechadas &amp; Entradas</span>
+                    <strong id="legend-won-val">R$ 0,00</strong>
+                  </div>
+                  <div class="legend-row">
+                    <span><i class="dot-lilac"></i> Em Negociação &amp; Orçamentos</span>
+                    <strong id="legend-pipe-val">R$ 0,00</strong>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <!-- TABELA LISTA DE CLIENTES & NEGÓCIOS -->
+            <article class="panel-card table-panel">
+              <div class="table-toolbar">
+                <h2>Lista de Clientes</h2>
+                <div class="table-controls">
+                  <div class="search-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" stroke-linecap="round" />
+                    </svg>
+                    <input
+                      type="search"
+                      id="customer-search-dash"
+                      placeholder="Buscar cliente ou serviço..."
+                      aria-label="Buscar na lista de clientes"
+                    />
+                  </div>
+                  <select id="customer-stage-dash" aria-label="Filtrar por etapa">
+                    <option value="all">Todas Etapas</option>
+                    <option value="novo">Novo Contato</option>
+                    <option value="orcamento">Orçamento Enviado</option>
+                    <option value="negociacao">Em Negociação</option>
+                    <option value="fechado">Venda Fechada</option>
+                    <option value="perdido">Não Fechou</option>
+                  </select>
+                  <button type="button" class="btn-primary btn-sm" id="add-customer-dash">
+                    + Adicionar Cliente
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-scroll">
+                <table class="crm-table">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Código</th>
+                      <th>Telefone</th>
+                      <th>Status</th>
+                      <th>Serviço &amp; Valor</th>
+                      <th>Responsável</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customer-table-body-dash"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <!-- VISÃO 2: FUNIL DE VENDAS KANBAN (5 COLUNAS INTERATIVAS) -->
+          <section id="tab-crm" class="module-section hidden">
+            <div class="section-bar">
+              <div>
+                <h2>Funil de Vendas Kanban</h2>
+                <p>Vendas movidas para "Venda Fechada" entram automaticamente no Fluxo de Caixa.</p>
+              </div>
+            </div>
+            <div id="kanban-board" class="kanban-board"></div>
+          </section>
+
+          <!-- VISÃO 3: FLUXO DE CAIXA -->
+          <section id="tab-cashflow" class="module-section hidden">
+            <div class="cf-layout">
+              <aside class="panel-card cf-form-card">
+                <h2>Novo Lançamento</h2>
+                <form id="tx-form" class="tx-form">
+                  <div class="type-toggle">
+                    <button type="button" class="type-btn active-in" data-type="entrada">
+                      Entrada (+)
+                    </button>
+                    <button type="button" class="type-btn" data-type="saida">
+                      Saída (-)
+                    </button>
+                  </div>
+
+                  <div class="field">
+                    <label for="tx-desc">Descrição</label>
+                    <input
+                      type="text"
+                      id="tx-desc"
+                      required
+                      placeholder="Ex: Pagamento cliente / Aluguel"
+                    />
+                  </div>
+
+                  <div class="field-row">
+                    <div class="field">
+                      <label for="tx-amount">Valor (R$)</label>
+                      <input
+                        type="number"
+                        id="tx-amount"
+                        required
+                        min="1"
+                        step="0.01"
+                        placeholder="0,00"
+                      />
+                    </div>
+                    <div class="field">
+                      <label for="tx-date">Data</label>
+                      <input type="date" id="tx-date" required />
+                    </div>
+                  </div>
+
+                  <div class="field">
+                    <label for="tx-cat">Categoria</label>
+                    <select id="tx-cat">
+                      <option value="Vendas & Serviços">Vendas &amp; Serviços</option>
+                      <option value="Fornecedores">Fornecedores &amp; Estoque</option>
+                      <option value="Custos Fixos">Aluguel, Luz &amp; Internet</option>
+                      <option value="Marketing">Marketing &amp; Anúncios</option>
+                      <option value="Equipe">Equipe &amp; Pró-labore</option>
+                    </select>
+                  </div>
+
+                  <button type="submit" class="btn-primary btn-full">Registrar no Caixa</button>
+                </form>
+
+                <div class="health-box">
+                  <div class="health-head">
+                    <span>Proporção Entradas vs. Saídas</span>
+                    <strong id="health-pct">0%</strong>
+                  </div>
+                  <div class="health-bar">
+                    <div id="health-fill" class="health-fill" style="width: 0%"></div>
+                  </div>
+                </div>
+              </aside>
+
+              <article class="panel-card cf-ledger-card">
+                <div class="ledger-head">
+                  <h2>Extrato de Caixa</h2>
+                  <div class="ledger-filters">
+                    <button class="filter-chip active" data-filter="all" type="button">Todas</button>
+                    <button class="filter-chip" data-filter="entrada" type="button">Entradas</button>
+                    <button class="filter-chip" data-filter="saida" type="button">Saídas</button>
+                  </div>
+                </div>
+                <div id="tx-list" class="tx-list"></div>
+              </article>
+            </div>
+          </section>
+
+          <!-- VISÃO 4: CLIENTES (TABELA DEDICADA COMPLETA) -->
+          <section id="tab-customers" class="module-section hidden">
+            <article class="panel-card table-panel">
+              <div class="table-toolbar">
+                <h2>Carteira de Clientes — <span class="biz-inline-name">Sua Empresa</span></h2>
+                <div class="table-controls">
+                  <div class="search-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" stroke-linecap="round" />
+                    </svg>
+                    <input
+                      type="search"
+                      id="customer-search-full"
+                      placeholder="Buscar cliente, telefone ou serviço..."
+                      aria-label="Buscar na carteira de clientes"
+                    />
+                  </div>
+                  <button type="button" class="btn-primary btn-sm" id="add-customer-full">
+                    + Adicionar Cliente
+                  </button>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <table class="crm-table">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Código</th>
+                      <th>Telefone</th>
+                      <th>Status</th>
+                      <th>Serviço &amp; Valor</th>
+                      <th>Responsável</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customer-table-body-full"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <!-- VISÃO 5: EQUIPE & ROI -->
+          <section id="tab-analytics" class="module-section hidden">
+            <section class="intel-grid" aria-label="Desempenho comercial e financeiro">
+              <article class="panel-card intel-card">
+                <h3>Quem Vendeu (Por Vendedor)</h3>
+                <div id="seller-ranking" class="intel-list"></div>
+              </article>
+
+              <article class="panel-card intel-card">
+                <h3>Quem Não Vendeu (Perdas)</h3>
+                <div id="lost-summary" class="intel-list"></div>
+              </article>
+
+              <article class="panel-card intel-card">
+                <h3>Raio-X: ROI, Ticket &amp; Lucro</h3>
+                <div id="roi-breakdown" class="intel-list"></div>
+              </article>
+            </section>
+          </section>
+        </main>
+
+        <footer class="workspace-footer">
+          <span>
+            <strong id="footer-biz-name">Sua Empresa</strong> · CRM, ROI &amp; Fluxo de Caixa
+          </span>
+          <span class="footer-credit">
+            Desenvolvido por <strong>Joel Oliveira.</strong>
+          </span>
+        </footer>
       </div>
-    </header>
+    </div>
 
-    <main class="container main-wrap">
-      <!-- FAIXA DE KPIs EXECUTIVOS -->
-      <section class="kpi-grid" aria-label="Indicadores financeiros e comerciais">
-        <article class="kpi-card kpi-dark" id="kpi-result-card">
-          <span id="kpi-result-label">Lucro Líquido no Período</span>
-          <strong id="kpi-profit">R$ 0,00</strong>
-          <small id="kpi-margin">Margem: 0%</small>
-        </article>
-        <article class="kpi-card">
-          <span>Entradas vs. Saídas</span>
-          <strong id="kpi-in" class="text-green">R$ 0,00</strong>
-          <small id="kpi-out-sub">Saídas: R$ 0,00</small>
-        </article>
-        <article class="kpi-card">
-          <span>ROI sobre Marketing</span>
-          <strong id="kpi-roi">0%</strong>
-          <small id="kpi-roi-sub">Retorno sobre investimento</small>
-        </article>
-        <article class="kpi-card">
-          <span>Quem Entrou · Vendeu · Saiu</span>
-          <strong id="kpi-funnel-mix">0 / 0 / 0</strong>
-          <small id="kpi-conversion">Conversão: 0% · Perdidos: R$ 0,00</small>
-        </article>
-      </section>
-
-      <!-- MÓDULO 1: CRM (FUNIL DE VENDAS) -->
-      <section id="tab-crm" class="module-section">
-        <div class="section-toolbar">
-          <div>
-            <h1>Funil de Vendas da <span class="biz-inline-name">Sua Empresa</span></h1>
-            <p>
-              Veja quem entrou, quem vendeu e quem não fechou. Vendas fechadas entram
-              automaticamente no seu Fluxo de Caixa.
-            </p>
-          </div>
-          <button id="open-lead-modal" type="button" class="btn-primary">+ Novo Orçamento</button>
-        </div>
-
-        <div id="kanban-board" class="kanban-board"></div>
-      </section>
-
-      <!-- MÓDULO 2: FLUXO DE CAIXA & INTELIGÊNCIA -->
-      <section id="tab-cashflow" class="module-section hidden">
-        <div class="section-toolbar">
-          <div>
-            <h1>Fluxo de Caixa &amp; Resultados da <span class="biz-inline-name">Sua Empresa</span></h1>
-            <p>
-              Análise completa de entradas, saídas, ROI, lucro ou prejuízo, desempenho por vendedor
-              e motivos de perda.
-            </p>
-          </div>
-          <button id="export-csv-btn" type="button" class="btn-outline">Exportar CSV (Excel)</button>
-        </div>
-
-        <!-- RESUMO EXECUTIVO: QUEM ENTROU, QUEM VENDEU, QUEM NÃO VENDEU, ROI E PREJUÍZO -->
-        <section class="intel-grid" aria-label="Resumo executivo do negócio">
-          <article class="intel-card">
-            <h3>Quem Vendeu (Por Vendedor)</h3>
-            <div id="seller-ranking" class="intel-list"></div>
-          </article>
-
-          <article class="intel-card">
-            <h3>Quem Não Vendeu (Perdas)</h3>
-            <div id="lost-summary" class="intel-list"></div>
-          </article>
-
-          <article class="intel-card">
-            <h3>Raio-X: ROI, Ticket &amp; Prejuízo</h3>
-            <div id="roi-breakdown" class="intel-list"></div>
-          </article>
-        </section>
-
-        <div class="cf-layout">
-          <!-- FORMULÁRIO DE LANÇAMENTO -->
-          <aside class="cf-form-card">
-            <h2>Novo Lançamento no Caixa</h2>
-            <form id="tx-form" class="tx-form">
-              <div class="type-toggle">
-                <button type="button" class="type-btn active-in" data-type="entrada">Entrada (+)</button>
-                <button type="button" class="type-btn" data-type="saida">Saída (-)</button>
-              </div>
-
-              <div class="field">
-                <label for="tx-desc">Descrição</label>
-                <input type="text" id="tx-desc" required placeholder="Ex: Pagamento cliente / Aluguel" />
-              </div>
-
-              <div class="field-row">
-                <div class="field">
-                  <label for="tx-amount">Valor (R$)</label>
-                  <input type="number" id="tx-amount" required min="1" step="0.01" placeholder="0,00" />
-                </div>
-                <div class="field">
-                  <label for="tx-date">Data</label>
-                  <input type="date" id="tx-date" required />
-                </div>
-              </div>
-
-              <div class="field">
-                <label for="tx-cat">Categoria</label>
-                <select id="tx-cat">
-                  <option value="Vendas & Serviços">Vendas &amp; Serviços</option>
-                  <option value="Fornecedores">Fornecedores &amp; Estoque</option>
-                  <option value="Custos Fixos">Aluguel, Luz &amp; Internet</option>
-                  <option value="Marketing">Marketing &amp; Anúncios</option>
-                  <option value="Equipe">Equipe &amp; Pró-labore</option>
-                </select>
-              </div>
-
-              <button type="submit" class="btn-primary btn-full">Registrar no Caixa</button>
-            </form>
-
-            <div class="health-box">
-              <div class="health-head">
-                <span>Proporção Entradas vs. Saídas</span>
-                <strong id="health-pct">0%</strong>
-              </div>
-              <div class="health-bar">
-                <div id="health-fill" class="health-fill" style="width: 0%"></div>
-              </div>
-            </div>
-          </aside>
-
-          <!-- EXTRATO DE MOVIMENTAÇÕES -->
-          <div class="cf-ledger-card">
-            <div class="ledger-head">
-              <h2>Quem Entrou e Quem Saiu do Caixa</h2>
-              <div class="ledger-filters">
-                <button class="filter-chip active" data-filter="all">Todas</button>
-                <button class="filter-chip" data-filter="entrada">Entradas</button>
-                <button class="filter-chip" data-filter="saida">Saídas</button>
-              </div>
-            </div>
-            <div id="tx-list" class="tx-list"></div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- MODAL NOVO ORÇAMENTO / LEAD -->
+    <!-- MODAL NOVO ORÇAMENTO / CLIENTE -->
     <div id="lead-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
       <div class="modal-backdrop" id="lead-backdrop"></div>
       <div class="modal-dialog">
         <div class="modal-head">
           <h2 id="lead-modal-title">Novo Cliente / Orçamento</h2>
-          <button id="close-lead-modal" class="modal-close" aria-label="Fechar">✕</button>
+          <button id="close-lead-modal" class="modal-close" aria-label="Fechar" type="button">✕</button>
         </div>
         <form id="lead-form" class="tx-form">
           <div class="field">
             <label for="lead-name">Nome do Cliente ou Empresa</label>
-            <input type="text" id="lead-name" required placeholder="Ex: Roberto Almeida · Padaria Central" />
+            <input
+              type="text"
+              id="lead-name"
+              required
+              placeholder="Ex: Roberto Almeida · Padaria Central"
+            />
           </div>
-          <div class="field">
-            <label for="lead-service">Serviço / Produto Orçado</label>
-            <input type="text" id="lead-service" required placeholder="Ex: Pacote Mensal / Projeto Completo" />
+          <div class="field-row">
+            <div class="field">
+              <label for="lead-phone">Telefone / WhatsApp</label>
+              <input type="tel" id="lead-phone" placeholder="(11) 99999-9999" />
+            </div>
+            <div class="field">
+              <label for="lead-service">Serviço / Produto Orçado</label>
+              <input
+                type="text"
+                id="lead-service"
+                required
+                placeholder="Ex: Sistema Web / Pacote"
+              />
+            </div>
           </div>
           <div class="field-row">
             <div class="field">
               <label for="lead-value">Valor Previsto (R$)</label>
-              <input type="number" id="lead-value" required min="1" step="0.01" placeholder="1500,00" />
+              <input type="number" id="lead-value" required min="1" step="0.01" placeholder="1500.00" />
             </div>
             <div class="field">
               <label for="lead-seller">Vendedor Responsável</label>
@@ -259,30 +633,10 @@
               </select>
             </div>
           </div>
-          <button type="submit" class="btn-primary btn-full">Adicionar ao Funil</button>
+          <button type="submit" class="btn-primary btn-full">Adicionar ao CRM</button>
         </form>
       </div>
     </div>
-
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <span><strong id="footer-biz-name">Sua Empresa</strong> · CRM, ROI &amp; Fluxo de Caixa</span>
-        <span style="display:inline-flex;align-items:center;gap:0.5rem;">
-          <svg width="28" height="22" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs>
-              <linearGradient id="joFooterGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#FFFFFF" />
-                <stop offset="45%" stop-color="#7DD3FC" />
-                <stop offset="100%" stop-color="#0066FF" />
-              </linearGradient>
-            </defs>
-            <path d="M58 38 V104 C58 130 43 144 23 144 C8 144 -3 136 -9 124" transform="translate(18,-10)" fill="none" stroke="url(#joFooterGrad)" stroke-width="25" stroke-linecap="round" />
-            <path d="M78 97 C78 66 94 27 129 27 C159 27 178 48 178 75 C178 104 158 125 131 125 C109 125 94 115 84 99" fill="none" stroke="url(#joFooterGrad)" stroke-width="25" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          Desenvolvido por <strong>Joel Oliveira.</strong>
-        </span>
-      </div>
-    </footer>
 
     <script src="app.js"></script>
   </body>

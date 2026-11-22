@@ -1,18 +1,46 @@
 const STAGES = [
-  { id: "novo", label: "Novo Contato" },
-  { id: "orcamento", label: "Orçamento Enviado" },
-  { id: "negociacao", label: "Em Negociação" },
-  { id: "fechado", label: "Venda Fechada" },
-  { id: "perdido", label: "Não Fechou" }
+  { id: "novo", label: "Novo Contato", short: "Novo" },
+  { id: "orcamento", label: "Orçamento Enviado", short: "Orçamento" },
+  { id: "negociacao", label: "Em Negociação", short: "VIP · Negoc." },
+  { id: "fechado", label: "Venda Fechada", short: "Fechado" },
+  { id: "perdido", label: "Não Fechou", short: "Perdido" }
 ];
+
+const VIEW_META = {
+  dashboard: { title: "Dashboard", sub: "Resumo financeiro, gráfico de vendas e carteira de clientes" },
+  crm: { title: "Funil de Vendas", sub: "Acompanhamento de etapas com lançamento automático no caixa" },
+  cashflow: { title: "Fluxo de Caixa", sub: "Entradas, saídas, extrato completo e saúde financeira" },
+  customers: { title: "Clientes", sub: "Lista pesquisável com status, contato, serviço e ações rápidas" },
+  analytics: { title: "Equipe & ROI", sub: "Ranking de vendas por responsável, perdas e lucro real" }
+};
+
+const PERIOD_SERIES = {
+  diario: {
+    labels: ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "HOJE"],
+    values: [900, 1250, 1100, 1650, 1480, 1920, 2450],
+    growth: "+14,2%"
+  },
+  semanal: {
+    labels: ["SEM 1", "SEM 2", "SEM 3", "SEM 4", "SEM 5", "SEM 6"],
+    values: [1450, 1780, 1620, 2190, 2050, 2450],
+    growth: "+19,8%"
+  },
+  mensal: {
+    labels: ["MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV"],
+    values: [1280, 1720, 1490, 2240, 1890, 2150, 2450],
+    growth: "+24,5%"
+  }
+};
 
 const DEFAULT_DATA = {
   bizName: "Sua Empresa",
-  bizColor: "#1D4ED8",
+  bizColor: "#5B5CE6",
   leads: [
     {
       id: "l1",
+      code: "CL-1041",
       name: "Padaria Central · Roberto",
+      phone: "(11) 99412-3010",
       service: "Site Institucional + Cardápio",
       value: 1800,
       origin: "WhatsApp",
@@ -21,7 +49,9 @@ const DEFAULT_DATA = {
     },
     {
       id: "l2",
+      code: "CL-1042",
       name: "Clínica Vida · Dra. Helena",
+      phone: "(11) 98744-1122",
       service: "Sistema de Agendamento",
       value: 2400,
       origin: "Indicação",
@@ -30,7 +60,9 @@ const DEFAULT_DATA = {
     },
     {
       id: "l3",
+      code: "CL-1043",
       name: "Auto Peças Silva",
+      phone: "(11) 99108-7740",
       service: "Painel de Estoque & Caixa",
       value: 3200,
       origin: "Google",
@@ -39,7 +71,9 @@ const DEFAULT_DATA = {
     },
     {
       id: "l4",
+      code: "CL-1044",
       name: "Barbearia Dom Pedro",
+      phone: "(11) 98320-5599",
       service: "Site + Clube Mensal",
       value: 1500,
       origin: "Instagram",
@@ -48,7 +82,9 @@ const DEFAULT_DATA = {
     },
     {
       id: "l5",
+      code: "CL-1045",
       name: "Restaurante Sabor Sul",
+      phone: "(11) 97655-8821",
       service: "Cardápio Digital",
       value: 1200,
       origin: "WhatsApp",
@@ -93,7 +129,7 @@ const DEFAULT_DATA = {
   ]
 };
 
-const STORE_KEY = "crm_caixa_mvp_v2";
+const STORE_KEY = "crm_caixa_saas_v3";
 
 function loadState() {
   try {
@@ -104,8 +140,13 @@ function loadState() {
 }
 
 let state = loadState();
+let activeTab = "dashboard";
+let chartPeriod = "mensal";
 let txType = "entrada";
 let txFilter = "all";
+let dashSearch = "";
+let dashStage = "all";
+let fullSearch = "";
 
 function saveState() {
   localStorage.setItem(STORE_KEY, JSON.stringify(state));
@@ -123,18 +164,21 @@ function initials(name) {
 
 function hexAlpha(hex, a) {
   const c = hex.replace("#", "");
-  const r = parseInt(c.slice(0, 2), 16) || 29;
-  const g = parseInt(c.slice(2, 4), 16) || 78;
-  const b = parseInt(c.slice(4, 6), 16) || 216;
+  const r = parseInt(c.slice(0, 2), 16) || 91;
+  const g = parseInt(c.slice(2, 4), 16) || 92;
+  const b = parseInt(c.slice(4, 6), 16) || 230;
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
 function applyBranding() {
   document.documentElement.style.setProperty("--brand", state.bizColor);
-  document.documentElement.style.setProperty("--brand-soft", hexAlpha(state.bizColor, 0.1));
+  document.documentElement.style.setProperty("--brand-soft", hexAlpha(state.bizColor, 0.12));
 
-  document.getElementById("biz-logo").textContent = initials(state.bizName);
+  const code = initials(state.bizName);
+  document.getElementById("biz-logo").textContent = code;
+  document.getElementById("header-avatar").textContent = code;
   document.getElementById("biz-name").textContent = state.bizName;
+  document.getElementById("header-biz-label").textContent = state.bizName;
   document.getElementById("footer-biz-name").textContent = state.bizName;
   document.querySelectorAll(".biz-inline-name").forEach((el) => {
     el.textContent = state.bizName;
@@ -148,7 +192,7 @@ function applyBranding() {
   document.getElementById("quick-biz-color").value = state.bizColor;
 }
 
-function renderKPIs() {
+function getFinancialMetrics() {
   const ins = state.transactions.filter((t) => t.type === "entrada");
   const outs = state.transactions.filter((t) => t.type === "saida");
   const totalIn = ins.reduce((s, t) => s + Number(t.amount), 0);
@@ -165,35 +209,278 @@ function renderKPIs() {
 
   const wonLeads = state.leads.filter((l) => l.stage === "fechado");
   const lostLeads = state.leads.filter((l) => l.stage === "perdido");
+  const openPipelineVal = state.leads
+    .filter((l) => l.stage !== "fechado" && l.stage !== "perdido")
+    .reduce((s, l) => s + Number(l.value), 0);
   const lostTotal = lostLeads.reduce((s, l) => s + Number(l.value), 0);
-  const conversion = state.leads.length > 0 ? Math.round((wonLeads.length / state.leads.length) * 100) : 0;
+  const conversion =
+    state.leads.length > 0 ? Math.round((wonLeads.length / state.leads.length) * 100) : 0;
 
+  return {
+    outs,
+    totalIn,
+    totalOut,
+    profit,
+    margin,
+    baseInvest,
+    roiPct,
+    roasX,
+    wonLeads,
+    lostLeads,
+    openPipelineVal,
+    lostTotal,
+    conversion
+  };
+}
+
+function renderKPIs() {
+  const m = getFinancialMetrics();
   const resultCard = document.getElementById("kpi-result-card");
   const resultLabel = document.getElementById("kpi-result-label");
-  if (profit < 0) {
+
+  if (m.profit < 0) {
     resultCard.classList.add("kpi-loss");
     resultLabel.textContent = "Prejuízo no Período";
   } else {
     resultCard.classList.remove("kpi-loss");
-    resultLabel.textContent = "Lucro Líquido no Período";
+    resultLabel.textContent = "Lucro Líquido";
   }
 
-  document.getElementById("kpi-profit").textContent = formatBRL(profit);
-  document.getElementById("kpi-margin").textContent = `Margem: ${margin}% · ${outs.length} saídas`;
-  document.getElementById("kpi-in").textContent = formatBRL(totalIn);
-  document.getElementById("kpi-out-sub").textContent = `Saídas: ${formatBRL(totalOut)}`;
-  document.getElementById("kpi-roi").textContent = `${roiPct >= 0 ? "+" : ""}${roiPct}%`;
-  document.getElementById("kpi-roi-sub").textContent = `Retorno: ${roasX}x sobre ${formatBRL(baseInvest)}`;
-  document.getElementById("kpi-funnel-mix").textContent = `${state.leads.length} / ${wonLeads.length} / ${lostLeads.length}`;
-  document.getElementById("kpi-conversion").textContent = `Conversão: ${conversion}% · Perdidos: ${formatBRL(lostTotal)}`;
+  document.getElementById("kpi-profit").textContent = formatBRL(m.profit);
+  document.getElementById("kpi-margin").textContent = `${m.margin}% (${m.outs.length} saídas)`;
+  document.getElementById("kpi-in").textContent = formatBRL(m.totalIn);
+  document.getElementById("kpi-out-sub").textContent = formatBRL(m.totalOut);
+  document.getElementById("kpi-roi").textContent = `${m.roiPct >= 0 ? "+" : ""}${m.roiPct}%`;
+  document.getElementById("kpi-roi-sub").textContent = `${m.roasX}x sobre ${formatBRL(m.baseInvest)}`;
+  document.getElementById("kpi-funnel-mix").textContent =
+    `${state.leads.length} / ${m.wonLeads.length} / ${m.lostLeads.length}`;
+  document.getElementById("kpi-conversion").textContent =
+    `${m.conversion}% · Perdidos ${formatBRL(m.lostTotal)}`;
 
   document.getElementById("crm-count").textContent = state.leads.length;
   document.getElementById("cf-count").textContent = state.transactions.length;
 
-  const totalFlow = totalIn + totalOut;
-  const inPct = totalFlow > 0 ? Math.round((totalIn / totalFlow) * 100) : 50;
+  const totalFlow = m.totalIn + m.totalOut;
+  const inPct = totalFlow > 0 ? Math.round((m.totalIn / totalFlow) * 100) : 50;
   document.getElementById("health-pct").textContent = `${inPct}% entradas`;
   document.getElementById("health-fill").style.width = `${inPct}%`;
+}
+
+function renderCharts() {
+  const m = getFinancialMetrics();
+  const series = PERIOD_SERIES[chartPeriod] || PERIOD_SERIES.mensal;
+  const values = [...series.values];
+  // Ajusta o último ponto dinamicamente ao total atual de entradas do caixa
+  values[values.length - 1] = Math.max(m.totalIn, 400);
+
+  document.getElementById("sales-chart-total").textContent = formatBRL(m.totalIn);
+  document.getElementById("sales-growth-pill").textContent = `↗ ${series.growth}`;
+
+  const W = 620;
+  const H = 210;
+  const padL = 42;
+  const padR = 18;
+  const padT = 26;
+  const padB = 28;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const maxVal = Math.max(...values, 2800) * 1.15;
+
+  const pts = values.map((val, i) => ({
+    x: padL + (i / (values.length - 1)) * innerW,
+    y: padT + innerH - (val / maxVal) * innerH,
+    val,
+    label: series.labels[i]
+  }));
+
+  let lineD = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const cx = (pts[i].x + pts[i + 1].x) / 2;
+    lineD += ` C ${cx} ${pts[i].y}, ${cx} ${pts[i + 1].y}, ${pts[i + 1].x} ${pts[i + 1].y}`;
+  }
+  const areaD = `${lineD} L ${pts[pts.length - 1].x} ${padT + innerH} L ${pts[0].x} ${padT + innerH} Z`;
+
+  let peak = pts[0];
+  pts.forEach((p) => {
+    if (p.val >= peak.val) peak = p;
+  });
+
+  const gridLines = [0, 0.33, 0.66, 1]
+    .map((ratio) => {
+      const y = padT + innerH * (1 - ratio);
+      const tick = Math.round((maxVal * ratio) / 100) * 100;
+      return `
+        <line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="#E5E7EB" stroke-dasharray="4 4" />
+        <text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#9CA3AF" font-size="10">${tick}</text>
+      `;
+    })
+    .join("");
+
+  const xLabels = pts
+    .map(
+      (p) =>
+        `<text x="${p.x}" y="${H - 6}" text-anchor="middle" fill="#9CA3AF" font-size="10" font-weight="600">${p.label}</text>`
+    )
+    .join("");
+
+  const tipX = Math.min(Math.max(peak.x - 52, padL), W - 120);
+  const tipY = Math.max(peak.y - 46, 4);
+
+  document.getElementById("sales-chart-svg-wrap").innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Curva de vendas e entradas">
+      <defs>
+        <linearGradient id="salesAreaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${state.bizColor}" stop-opacity="0.28" />
+          <stop offset="100%" stop-color="${state.bizColor}" stop-opacity="0.01" />
+        </linearGradient>
+      </defs>
+      ${gridLines}
+      <path d="${areaD}" fill="url(#salesAreaGrad)" />
+      <path d="${lineD}" stroke="${state.bizColor}" stroke-width="3" stroke-linecap="round" />
+      <line x1="${peak.x}" y1="${peak.y}" x2="${peak.x}" y2="${padT + innerH}" stroke="${state.bizColor}" stroke-width="1.5" stroke-dasharray="3 3" />
+      <circle cx="${peak.x}" cy="${peak.y}" r="5.5" fill="#FFFFFF" stroke="${state.bizColor}" stroke-width="3" />
+      <rect x="${tipX}" y="${tipY}" width="108" height="34" rx="9" fill="#111827" />
+      <text x="${tipX + 54}" y="${tipY + 14}" text-anchor="middle" fill="#A5B4FC" font-size="9" font-weight="600">${state.leads.length} clientes no funil</text>
+      <text x="${tipX + 54}" y="${tipY + 27}" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="800">${formatBRL(peak.val)}</text>
+      ${xLabels}
+    </svg>
+  `;
+
+  // Gráfico de cápsulas verticais à direita
+  const combinedRevenue = m.totalIn + m.openPipelineVal;
+  document.getElementById("revenue-chart-total").textContent = formatBRL(combinedRevenue);
+  document.getElementById("legend-won-val").textContent = formatBRL(m.totalIn);
+  document.getElementById("legend-pipe-val").textContent = formatBRL(m.openPipelineVal);
+
+  const barSpec = [
+    { lbl: "MAR", main: 42, cap: 24 },
+    { lbl: "ABR", main: 62, cap: 18 },
+    { lbl: "MAI", main: 36, cap: 34 },
+    { lbl: "JUN", main: 58, cap: 28 },
+    { lbl: "JUL", main: 48, cap: 22 },
+    { lbl: "AGO", main: 70, cap: 20 },
+    { lbl: "SET", main: 52, cap: 26 },
+    { lbl: "OUT", main: 66, cap: 18 },
+    { lbl: "NOV", main: Math.min(82, Math.max(38, Math.round((m.totalIn / Math.max(combinedRevenue, 1)) * 95))), cap: 16 }
+  ];
+
+  document.getElementById("capsule-bars").innerHTML = barSpec
+    .map(
+      (b) => `
+      <div class="capsule-col">
+        <div class="capsule-track">
+          <div class="capsule-top-cap" style="height:${b.cap}%;"></div>
+          <div class="capsule-fill" style="height:${b.main}%;"></div>
+        </div>
+        <span class="capsule-label">${b.lbl}</span>
+      </div>`
+    )
+    .join("");
+}
+
+function advanceLeadStage(leadId, action, nextStageId) {
+  const lead = state.leads.find((l) => l.id === leadId);
+  if (!lead) return;
+
+  if (action === "lost") {
+    lead.stage = "perdido";
+    lead.lostReason = "Preço / Sem retorno";
+  } else {
+    const targetStage = action === "win" ? "fechado" : nextStageId;
+    lead.stage = targetStage;
+
+    if (targetStage === "fechado") {
+      state.transactions.unshift({
+        id: "t" + Date.now(),
+        type: "entrada",
+        desc: `Venda Fechada: ${lead.name} (${lead.seller || "Equipe"})`,
+        cat: "Vendas & Serviços",
+        amount: Number(lead.value),
+        date: new Date().toISOString().slice(0, 10)
+      });
+    }
+  }
+
+  saveState();
+  renderAll();
+}
+
+function renderCustomerTable(tbodyId, searchQuery, stageFilter) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+
+  const q = searchQuery.trim().toLowerCase();
+  const filtered = state.leads.filter((lead) => {
+    if (stageFilter !== "all" && lead.stage !== stageFilter) return false;
+    if (!q) return true;
+    return `${lead.name} ${lead.service} ${lead.phone || ""} ${lead.seller} ${lead.code || ""}`
+      .toLowerCase()
+      .includes(q);
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align:center; color: var(--muted); padding: 1.5rem;">
+          Nenhum cliente encontrado para este filtro.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered
+    .map((lead, idx) => {
+      const stageMeta = STAGES.find((s) => s.id === lead.stage) || STAGES[0];
+      const stageIdx = STAGES.findIndex((s) => s.id === lead.stage);
+      const nextStage = STAGES[stageIdx + 1];
+      const code = lead.code || `CL-${1040 + state.leads.length - idx}`;
+
+      let actionBtns = "";
+      if (lead.stage !== "fechado" && lead.stage !== "perdido" && nextStage) {
+        actionBtns = `
+          <div class="row-actions">
+            <button type="button" class="lead-btn" data-act="next" data-id="${lead.id}" data-next="${nextStage.id}">Mover →</button>
+            <button type="button" class="lead-btn lead-btn-win" data-act="win" data-id="${lead.id}">Fechar ✓</button>
+            <button type="button" class="lead-btn lead-btn-lost" data-act="lost" data-id="${lead.id}">✕</button>
+          </div>
+        `;
+      } else if (lead.stage === "fechado") {
+        actionBtns = `<span class="text-green" style="font-size:0.75rem;font-weight:700;">No Caixa ✓</span>`;
+      } else {
+        actionBtns = `<span class="text-red" style="font-size:0.74rem;font-weight:600;">${lead.lostReason || "Perdido"}</span>`;
+      }
+
+      return `
+        <tr>
+          <td>
+            <div class="client-cell">
+              <span class="client-mini-avatar">${initials(lead.name)}</span>
+              <div>
+                <strong>${lead.name}</strong>
+                <div style="font-size:0.72rem;color:var(--muted);">${lead.origin}</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:var(--muted);font-weight:600;">${code}</td>
+          <td>${lead.phone || "(11) 99999-0000"}</td>
+          <td><span class="stage-badge stage-${lead.stage}">${stageMeta.short}</span></td>
+          <td>
+            <strong>${formatBRL(lead.value)}</strong>
+            <div style="font-size:0.72rem;color:var(--muted);">${lead.service}</div>
+          </td>
+          <td>${lead.seller || "Equipe"}</td>
+          <td>${actionBtns}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  tbody.querySelectorAll(".lead-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      advanceLeadStage(btn.dataset.id, btn.dataset.act, btn.dataset.next);
+    });
+  });
 }
 
 function renderIntel() {
@@ -208,8 +495,7 @@ function renderIntel() {
     }
   });
 
-  const sellerEl = document.getElementById("seller-ranking");
-  sellerEl.innerHTML = Object.entries(sellers)
+  document.getElementById("seller-ranking").innerHTML = Object.entries(sellers)
     .sort((a, b) => b[1].wonVal - a[1].wonVal)
     .map(
       ([name, d]) => `
@@ -236,19 +522,19 @@ function renderIntel() {
       .join("");
   }
 
-  const totalIn = state.transactions.filter((t) => t.type === "entrada").reduce((s, t) => s + Number(t.amount), 0);
-  const totalOut = state.transactions.filter((t) => t.type === "saida").reduce((s, t) => s + Number(t.amount), 0);
-  const profit = totalIn - totalOut;
-  const wonLeads = state.leads.filter((l) => l.stage === "fechado");
-  const avgTicket = wonLeads.length > 0 ? wonLeads.reduce((s, l) => s + Number(l.value), 0) / wonLeads.length : 0;
+  const m = getFinancialMetrics();
+  const avgTicket =
+    m.wonLeads.length > 0
+      ? m.wonLeads.reduce((s, l) => s + Number(l.value), 0) / m.wonLeads.length
+      : 0;
 
   document.getElementById("roi-breakdown").innerHTML = `
     <div class="intel-row"><span>Ticket Médio (Vendas)</span><strong>${formatBRL(avgTicket)}</strong></div>
-    <div class="intel-row"><span>Total que Entrou</span><strong class="text-green">${formatBRL(totalIn)}</strong></div>
-    <div class="intel-row"><span>Total que Saiu</span><strong class="text-red">${formatBRL(totalOut)}</strong></div>
+    <div class="intel-row"><span>Total que Entrou</span><strong class="text-green">${formatBRL(m.totalIn)}</strong></div>
+    <div class="intel-row"><span>Total que Saiu</span><strong class="text-red">${formatBRL(m.totalOut)}</strong></div>
     <div class="intel-row">
-      <span>${profit >= 0 ? "Lucro Real" : "Prejuízo Real"}</span>
-      <strong class="${profit >= 0 ? "text-green" : "text-red"}">${formatBRL(profit)}</strong>
+      <span>${m.profit >= 0 ? "Lucro Real" : "Prejuízo Real"}</span>
+      <strong class="${m.profit >= 0 ? "text-green" : "text-red"}">${formatBRL(m.profit)}</strong>
     </div>
   `;
 }
@@ -279,15 +565,15 @@ function renderKanban() {
       let actionsHtml = "";
       if (stage.id !== "fechado" && stage.id !== "perdido") {
         const nextStage = STAGES[idx + 1];
-        actionsHtml += `<button class="lead-btn" data-act="next" data-id="${lead.id}" data-next="${nextStage.id}">Mover →</button>`;
+        actionsHtml += `<button type="button" class="lead-btn" data-act="next" data-id="${lead.id}" data-next="${nextStage.id}">Mover →</button>`;
         if (nextStage.id !== "fechado") {
-          actionsHtml += `<button class="lead-btn lead-btn-win" data-act="win" data-id="${lead.id}">Fechar ✓</button>`;
+          actionsHtml += `<button type="button" class="lead-btn lead-btn-win" data-act="win" data-id="${lead.id}">Fechar ✓</button>`;
         }
-        actionsHtml += `<button class="lead-btn lead-btn-lost" data-act="lost" data-id="${lead.id}">Perdido ✕</button>`;
+        actionsHtml += `<button type="button" class="lead-btn lead-btn-lost" data-act="lost" data-id="${lead.id}">Perdido ✕</button>`;
       } else if (stage.id === "fechado") {
-        actionsHtml = `<span style="font-size:0.74rem; color: var(--green); font-weight:700;">Lançado no Caixa ✓</span>`;
+        actionsHtml = `<span class="text-green" style="font-size:0.74rem;font-weight:700;">Lançado no Caixa ✓</span>`;
       } else {
-        actionsHtml = `<span style="font-size:0.74rem; color: var(--red); font-weight:700;">${lead.lostReason || "Não fechou"}</span>`;
+        actionsHtml = `<span class="text-red" style="font-size:0.74rem;font-weight:700;">${lead.lostReason || "Não fechou"}</span>`;
       }
 
       card.innerHTML = `
@@ -308,30 +594,7 @@ function renderKanban() {
 
   board.querySelectorAll(".lead-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const lead = state.leads.find((l) => l.id === btn.dataset.id);
-      if (!lead) return;
-
-      if (btn.dataset.act === "lost") {
-        lead.stage = "perdido";
-        lead.lostReason = "Preço / Sem retorno";
-      } else {
-        const targetStage = btn.dataset.act === "win" ? "fechado" : btn.dataset.next;
-        lead.stage = targetStage;
-
-        if (targetStage === "fechado") {
-          state.transactions.unshift({
-            id: "t" + Date.now(),
-            type: "entrada",
-            desc: `Venda Fechada: ${lead.name} (${lead.seller || "Equipe"})`,
-            cat: "Vendas & Serviços",
-            amount: Number(lead.value),
-            date: new Date().toISOString().slice(0, 10)
-          });
-        }
-      }
-
-      saveState();
-      renderAll();
+      advanceLeadStage(btn.dataset.id, btn.dataset.act, btn.dataset.next);
     });
   });
 }
@@ -359,7 +622,7 @@ function renderLedger() {
         <span class="tx-amount ${isIn ? "text-green" : "text-red"}">
           ${isIn ? "+" : "-"} ${formatBRL(t.amount)}
         </span>
-        <button class="tx-del" data-id="${t.id}" title="Excluir lançamento" aria-label="Excluir">✕</button>
+        <button type="button" class="tx-del" data-id="${t.id}" title="Excluir lançamento" aria-label="Excluir">✕</button>
       </div>
     `;
     list.appendChild(item);
@@ -374,30 +637,87 @@ function renderLedger() {
   });
 }
 
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll(".nav-item").forEach((b) => {
+    const isMatch = b.dataset.tab === tab;
+    b.classList.toggle("active", isMatch);
+    b.setAttribute("aria-selected", String(isMatch));
+  });
+
+  Object.keys(VIEW_META).forEach((key) => {
+    const sec = document.getElementById(`tab-${key}`);
+    if (sec) sec.classList.toggle("hidden", key !== tab);
+  });
+
+  const meta = VIEW_META[tab] || VIEW_META.dashboard;
+  document.getElementById("workspace-title").textContent = meta.title;
+  document.getElementById("workspace-subtitle").innerHTML =
+    `${meta.sub} · <span class="biz-inline-name">${state.bizName}</span>`;
+
+  closeMobileSidebar();
+}
+
+function closeMobileSidebar() {
+  document.getElementById("app-sidebar").classList.remove("is-open");
+  document.getElementById("sidebar-backdrop").classList.add("hidden");
+}
+
 function renderAll() {
   applyBranding();
   renderKPIs();
+  renderCharts();
+  renderCustomerTable("customer-table-body-dash", dashSearch, dashStage);
+  renderCustomerTable("customer-table-body-full", fullSearch, "all");
   renderIntel();
   renderKanban();
   renderLedger();
 }
 
-// MODULE TABS
-document.querySelectorAll(".tab-btn").forEach((btn) => {
+// NAVEGACAO LATERAL + ATALHO DETALHES
+document.querySelectorAll(".nav-item").forEach((btn) => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+});
+
+document.querySelectorAll("[data-jump-tab]").forEach((btn) => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.jumpTab));
+});
+
+document.getElementById("open-sidebar-btn").addEventListener("click", () => {
+  document.getElementById("app-sidebar").classList.add("is-open");
+  document.getElementById("sidebar-backdrop").classList.remove("hidden");
+});
+
+document.getElementById("close-sidebar-btn").addEventListener("click", closeMobileSidebar);
+document.getElementById("sidebar-backdrop").addEventListener("click", closeMobileSidebar);
+
+// PERIOD SWITCH NO GRAFICO DE VENDAS
+document.querySelectorAll(".period-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach((b) => {
-      b.classList.remove("active");
-      b.setAttribute("aria-selected", "false");
-    });
+    document.querySelectorAll(".period-btn").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
-    btn.setAttribute("aria-selected", "true");
-    const isCRM = btn.dataset.tab === "crm";
-    document.getElementById("tab-crm").classList.toggle("hidden", !isCRM);
-    document.getElementById("tab-cashflow").classList.toggle("hidden", isCRM);
+    chartPeriod = btn.dataset.period;
+    renderCharts();
   });
 });
 
-// BRANDING
+// FILTROS TABELA CLIENTES
+document.getElementById("customer-search-dash").addEventListener("input", (e) => {
+  dashSearch = e.target.value;
+  renderCustomerTable("customer-table-body-dash", dashSearch, dashStage);
+});
+
+document.getElementById("customer-stage-dash").addEventListener("change", (e) => {
+  dashStage = e.target.value;
+  renderCustomerTable("customer-table-body-dash", dashSearch, dashStage);
+});
+
+document.getElementById("customer-search-full").addEventListener("input", (e) => {
+  fullSearch = e.target.value;
+  renderCustomerTable("customer-table-body-full", fullSearch, "all");
+});
+
+// PERSONALIZACAO DA MARCA
 document.getElementById("quick-biz-name").addEventListener("input", (e) => {
   state.bizName = e.target.value.trim() || DEFAULT_DATA.bizName;
   saveState();
@@ -408,6 +728,7 @@ document.getElementById("quick-biz-color").addEventListener("input", (e) => {
   state.bizColor = e.target.value;
   saveState();
   applyBranding();
+  renderCharts();
 });
 
 document.getElementById("reset-demo-btn").addEventListener("click", () => {
@@ -416,7 +737,7 @@ document.getElementById("reset-demo-btn").addEventListener("click", () => {
   renderAll();
 });
 
-// TX FORM
+// FORMULARIO FLUXO DE CAIXA
 document.getElementById("tx-date").value = new Date().toISOString().slice(0, 10);
 
 document.querySelectorAll(".type-btn").forEach((btn) => {
@@ -451,7 +772,6 @@ document.getElementById("tx-form").addEventListener("submit", (e) => {
   renderAll();
 });
 
-// LEDGER FILTERS
 document.querySelectorAll(".filter-chip").forEach((chip) => {
   chip.addEventListener("click", () => {
     document.querySelectorAll(".filter-chip").forEach((c) => c.classList.remove("active"));
@@ -461,7 +781,7 @@ document.querySelectorAll(".filter-chip").forEach((chip) => {
   });
 });
 
-// EXPORT CSV
+// EXPORTAR CSV
 document.getElementById("export-csv-btn").addEventListener("click", () => {
   const header = "Data;Tipo;Categoria;Descricao;Valor\n";
   const rows = state.transactions
@@ -476,15 +796,21 @@ document.getElementById("export-csv-btn").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-// LEAD MODAL
+// MODAL NOVO CLIENTE / ORCAMENTO
 const leadModal = document.getElementById("lead-modal");
-document.getElementById("open-lead-modal").addEventListener("click", () => leadModal.classList.remove("hidden"));
-document.getElementById("close-lead-modal").addEventListener("click", () => leadModal.classList.add("hidden"));
-document.getElementById("lead-backdrop").addEventListener("click", () => leadModal.classList.add("hidden"));
+const openLeadModal = () => leadModal.classList.remove("hidden");
+const closeLeadModal = () => leadModal.classList.add("hidden");
+
+document.getElementById("open-lead-modal").addEventListener("click", openLeadModal);
+document.getElementById("add-customer-dash").addEventListener("click", openLeadModal);
+document.getElementById("add-customer-full").addEventListener("click", openLeadModal);
+document.getElementById("close-lead-modal").addEventListener("click", closeLeadModal);
+document.getElementById("lead-backdrop").addEventListener("click", closeLeadModal);
 
 document.getElementById("lead-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const name = document.getElementById("lead-name").value.trim();
+  const phone = document.getElementById("lead-phone").value.trim() || "(11) 99999-0000";
   const service = document.getElementById("lead-service").value.trim();
   const value = Number(document.getElementById("lead-value").value);
   const seller = document.getElementById("lead-seller").value;
@@ -494,7 +820,9 @@ document.getElementById("lead-form").addEventListener("submit", (e) => {
 
   state.leads.unshift({
     id: "l" + Date.now(),
+    code: `CL-${1041 + state.leads.length}`,
     name,
+    phone,
     service,
     value,
     seller,
@@ -502,7 +830,7 @@ document.getElementById("lead-form").addEventListener("submit", (e) => {
     stage
   });
   e.target.reset();
-  leadModal.classList.add("hidden");
+  closeLeadModal();
   saveState();
   renderAll();
 });
