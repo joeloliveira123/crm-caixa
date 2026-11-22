@@ -255,7 +255,7 @@ function renderKPIs() {
   document.getElementById("kpi-funnel-mix").textContent =
     `${state.leads.length} / ${m.wonLeads.length} / ${m.lostLeads.length}`;
   document.getElementById("kpi-conversion").textContent =
-    `${m.conversion}% · Perdidos ${formatBRL(m.lostTotal)}`;
+    `${m.conversion}% (-${formatBRL(m.lostTotal)})`;
 
   document.getElementById("crm-count").textContent = state.leads.length;
   document.getElementById("cf-count").textContent = state.transactions.length;
@@ -278,9 +278,9 @@ function renderCharts() {
 
   const W = 620;
   const H = 210;
-  const padL = 42;
-  const padR = 18;
-  const padT = 26;
+  const padL = 46;
+  const padR = 26;
+  const padT = 28;
   const padB = 28;
   const innerW = W - padL - padR;
   const innerH = H - padT - padB;
@@ -323,7 +323,8 @@ function renderCharts() {
     )
     .join("");
 
-  const tipX = Math.min(Math.max(peak.x - 52, padL), W - 120);
+  const tipW = 116;
+  const tipX = Math.min(Math.max(peak.x - tipW / 2, padL), W - padR - tipW);
   const tipY = Math.max(peak.y - 46, 4);
 
   document.getElementById("sales-chart-svg-wrap").innerHTML = `
@@ -339,9 +340,9 @@ function renderCharts() {
       <path d="${lineD}" stroke="${state.bizColor}" stroke-width="3" stroke-linecap="round" />
       <line x1="${peak.x}" y1="${peak.y}" x2="${peak.x}" y2="${padT + innerH}" stroke="${state.bizColor}" stroke-width="1.5" stroke-dasharray="3 3" />
       <circle cx="${peak.x}" cy="${peak.y}" r="5.5" fill="#FFFFFF" stroke="${state.bizColor}" stroke-width="3" />
-      <rect x="${tipX}" y="${tipY}" width="108" height="34" rx="9" fill="#111827" />
-      <text x="${tipX + 54}" y="${tipY + 14}" text-anchor="middle" fill="#A5B4FC" font-size="9" font-weight="600">${state.leads.length} clientes no funil</text>
-      <text x="${tipX + 54}" y="${tipY + 27}" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="800">${formatBRL(peak.val)}</text>
+      <rect x="${tipX}" y="${tipY}" width="${tipW}" height="34" rx="9" fill="#111827" />
+      <text x="${tipX + tipW / 2}" y="${tipY + 14}" text-anchor="middle" fill="#A5B4FC" font-size="9" font-weight="600">${state.leads.length} clientes no funil</text>
+      <text x="${tipX + tipW / 2}" y="${tipY + 27}" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="800">${formatBRL(peak.val)}</text>
       ${xLabels}
     </svg>
   `;
@@ -462,15 +463,15 @@ function renderCustomerTable(tbodyId, searchQuery, stageFilter) {
               </div>
             </div>
           </td>
-          <td style="color:var(--muted);font-weight:600;">${code}</td>
-          <td>${lead.phone || "(11) 99999-0000"}</td>
-          <td><span class="stage-badge stage-${lead.stage}">${stageMeta.short}</span></td>
+          <td class="nowrap" style="color:var(--muted);font-weight:600;">${code}</td>
+          <td class="nowrap">${lead.phone || "(11) 99999-0000"}</td>
+          <td class="nowrap"><span class="stage-badge stage-${lead.stage}">${stageMeta.short}</span></td>
           <td>
-            <strong>${formatBRL(lead.value)}</strong>
+            <strong class="nowrap">${formatBRL(lead.value)}</strong>
             <div style="font-size:0.72rem;color:var(--muted);">${lead.service}</div>
           </td>
-          <td>${lead.seller || "Equipe"}</td>
-          <td>${actionBtns}</td>
+          <td class="nowrap">${lead.seller || "Equipe"}</td>
+          <td class="nowrap">${actionBtns}</td>
         </tr>
       `;
     })
